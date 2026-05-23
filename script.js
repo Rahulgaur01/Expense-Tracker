@@ -264,3 +264,142 @@ themeBtn.addEventListener("click", () => {
   }
 
 });
+/* ========================= */
+/* EXPORT PDF */
+/* ========================= */
+
+async function downloadPDF(){
+
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF();
+
+  // Title
+
+  doc.setFontSize(24);
+
+  doc.setTextColor(40,40,40);
+
+  doc.text("Fin Tracker Report", 20, 20);
+
+  // Line
+
+  doc.line(20, 28, 190, 28);
+
+  let y = 40;
+
+  let totalIncome = 0;
+  let totalExpense = 0;
+
+  // Check if transactions exist
+
+  if(transactions.length === 0){
+
+    doc.setFontSize(16);
+
+    doc.text("No transactions available.", 20, y);
+
+  }
+  else{
+
+    transactions.forEach((transaction,index) => {
+
+      // Auto next page
+
+      if(y > 270){
+
+        doc.addPage();
+
+        y = 20;
+      }
+
+      // Transaction Text
+
+      doc.setFontSize(14);
+
+      doc.text(
+        `${index + 1}. ${transaction.title}`,
+        20,
+        y
+      );
+
+      y += 8;
+
+      doc.setFontSize(12);
+
+      doc.text(
+        `Category: ${transaction.category}`,
+        25,
+        y
+      );
+
+      y += 7;
+
+      doc.text(
+        `Type: ${transaction.type}`,
+        25,
+        y
+      );
+
+      y += 7;
+
+      doc.text(
+  `Amount: Rs. ${transaction.amount}`,
+  25,
+  y
+);
+
+      y += 12;
+
+      // Totals
+
+      if(transaction.type === "income"){
+        totalIncome += transaction.amount;
+      }
+      else{
+        totalExpense += transaction.amount;
+      }
+
+    });
+
+  }
+
+  // Summary
+
+  y += 10;
+
+  doc.setFontSize(18);
+
+  doc.text("Financial Summary", 20, y);
+
+  y += 12;
+
+  doc.setFontSize(14);
+
+  doc.text(
+    `Total Income: Rs. ${totalIncome}`,
+    20,
+    y
+  );
+
+  y += 10;
+
+  doc.text(
+    `Total Expense: ₹${totalExpense}`,
+    20,
+    y
+  );
+
+  y += 10;
+
+  doc.text(
+    `Current Balance: ₹${totalIncome - totalExpense}`,
+    20,
+    y
+  );
+
+  // Save PDF
+
+  doc.save("Fin_Tracker_Report.pdf");
+
+}
